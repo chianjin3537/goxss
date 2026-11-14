@@ -1,0 +1,22 @@
+# 编译产物
+*.exe
+goxss
+goxss-linux-amd64
+# 保留 Windows 图标资源（编译必需）
+!rsrc_windows_amd64.syso
+
+# 数据库（含密码哈希与捕获数据，严禁入库）
+*.db
+*.db-shm
+*.db-wal
+
+# 日志与临时文件
+*.log
+*.err
+
+# 本地调试与工作区
+cc-skills-golang/
+opencode.json
+.idea/
+*.iml
+tools/wscheck/wscheck*.exe

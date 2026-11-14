@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 · GoxSS 管理后台</title>
+    <link rel="stylesheet" href="{{BASE}}/static/style.css{{E}}">
+</head>
+<body class="login-body">
+<script>window.GOXSS_BASE = "{{BASE}}"; window.GOXSS_ENTRY = "{{ENTRY}}";</script>
+<div class="login-wrap">
+    <div class="login-card">
+        <div class="brand center">
+            <div class="logo-mark">G</div>
+            <div class="brand-text">
+                <span class="logo">GoxSS</span>
+                <span class="sub">XSS 回显管理平台</span>
+            </div>
+        </div>
+
+        <form id="loginForm">
+            <div class="field-row">
+                <label>用户名</label>
+                <input id="user" class="input full" type="text" autocomplete="username" placeholder="admin" required>
+            </div>
+            <div class="field-row">
+                <label>密码</label>
+                <input id="pass" class="input full" type="password" autocomplete="current-password" placeholder="••••••••" required>
+            </div>
+            <p id="error" class="login-error hidden"></p>
+            <button type="submit" class="btn primary-btn full" id="loginBtn">登 录</button>
+        </form>
+
+        <p class="login-foot">默认账号 admin / 123456 · 请登录后在后台及时修改密码</p>
+    </div>
+</div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('loginBtn');
+    const errEl = document.getElementById('error');
+    btn.disabled = true;
+    btn.textContent = '登录中…';
+    try {
+        const res = await fetch(window.GOXSS_BASE + '/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Entry-Token': window.GOXSS_ENTRY || '' },
+            body: JSON.stringify({
+                user: document.getElementById('user').value.trim(),
+                pass: document.getElementById('pass').value,
+            }),
+        });
+        if (res.ok) {
+            location.href = window.GOXSS_BASE + '/';
+            return;
+        }
+        const data = await res.json().catch(() => ({}));
+        errEl.textContent = data.error || '登录失败';
+        errEl.classList.remove('hidden');
+    } catch (err) {
+        errEl.textContent = '网络错误，请重试';
+        errEl.classList.remove('hidden');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '登 录';
+    }
+});
+</script>
+</body>
+</html>

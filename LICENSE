@@ -1,0 +1,30 @@
+GNU GENERAL PUBLIC LICENSE
+Version 3, 29 June 2007
+
+Copyright (C) 2026 GoxSS Authors
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+═══════════════════════════════════════════════════════════════
+
+ADDITIONAL TERMS — 教育与授权测试专用声明
+
+本软件设计用途为授权范围内的渗透测试、安全研究与教学演示。
+
+1. 使用者必须确保在拥有合法授权的目标上使用本软件，遵守当地法律法规；
+2. 严禁将本软件用于任何未授权的网络攻击、数据窃取或其他非法活动；
+3. 使用者对其使用行为承担全部法律责任，作者不承担任何连带责任；
+4. 任何商业或非商业的再分发必须保留本声明及原许可协议。
+
+完整 GNU GPLv3 文本见: https://www.gnu.org/licenses/gpl-3.0.txt
